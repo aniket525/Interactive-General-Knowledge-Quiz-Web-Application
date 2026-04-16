@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Artificial Intelligence Quiz</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
+            animation: fadeIn 0.6s ease;
+        }
+
+        h2 {
+            text-align: center;
+            color: #4a47a3;
+        }
+
+        h3 {
+            color: #333;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            width: 60%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .question {
+            background: #f9f9ff;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: 0.3s;
+        }
+
+        .question:hover {
+            background: #eef1ff;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #4a47a3, #6a5acd);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        button:disabled {
+            background: gray;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+
+        .wrong {
+            color: red;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(20px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container" id="quizPage">
+    <h2>General Knowledge Quiz</h2>
+
+    <h3>Enter Your Details</h3>
+    Name: <input type="text" id="name" oninput="validateForm()"><br><br>
+    Enrollment ID: <input type="text" id="roll" oninput="validateForm()"><br><br>
+    Course Name: <input type="text" id="course" oninput="validateForm()"><br><br>
+
+    <div id="questions"></div>
+
+    <button id="submitBtn" onclick="submitQuiz()" disabled>Submit</button>
+</div>
+
+<div class="container hidden" id="resultPage">
+    <h2>Result</h2>
+
+    <p id="studentDetails"></p>
+    <h3 id="score"></h3>
+
+    <div id="answers"></div>
+</div>
+
+<script>
+const quizData = [
+{
+question: "1. What is the capital of France?",
+options: ["A) London","B) Berlin","C) Paris","D) Rome"],
+answer: 2
+},
+{
+question: "2. What is 15 + 25?",
+options: ["A) 30","B) 40","C) 50","D) 60"],
+answer: 1
+},
+{
+question: "3. Which planet is known as the 'Red Planet'?",
+options: ["A) Venus","B) Jupiter","C) Saturn","D) Mars"],
+answer: 3
+},
+{
+question: "4. How many letters are in the English alphabet?",
+options: ["A) 24","B) 25","C) 26","D) 27"],
+answer: 2
+},
+{
+question: "5. What is the chemical symbol for water?",
+options: ["A) CO2","B) H2O","C) O2","D) NaCl"],
+answer: 1
+},
+{
+question: "6. Which animal is known as the 'King of the Jungle'?",
+options: ["A) Tiger","B) Elephant","C) Lion","D) Bear"],
+answer: 2
+},
+{
+question: "7. How many minutes are in one hour?",
+options: ["A) 30","B) 45","C) 60","D) 90"],
+answer: 2
+},
+{
+question: "8. What color do you get when you mix red and yellow?",
+options: ["A) Green","B) Purple","C) Orange","D) Pink"],
+answer: 2
+},
+{
+question: "9. Which star is at the center of our Solar System?",
+options: ["A) The Moon","B) Sirius","C) The Sun","D) Polaris"],
+answer: 2
+},
+{
+question: "10. How many days are in a standard year (not a leap year)?",
+options: ["A) 364","B) 365","C) 366","D) 360"],
+answer: 1
+}
+];
+
+const questionsDiv = document.getElementById("questions");
+
+quizData.forEach((q, index) => {
+    let div = document.createElement("div");
+    div.classList.add("question");
+
+    div.innerHTML = `<p><b>${q.question}</b> <span style="color:blue;">(1 Point)</span></p>` +
+        q.options.map((opt, i) =>
+            `<input type="radio" name="q${index}" value="${i}" onchange="validateForm()"> ${opt}<br>`
+        ).join("");
+
+    questionsDiv.appendChild(div);
+});
+
+function validateForm() {
+    let name = document.getElementById("name").value.trim();
+    let roll = document.getElementById("roll").value.trim();
+    let course = document.getElementById("course").value.trim();
+    let allAnswered = true;
+
+    quizData.forEach((q, index) => {
+        if (!document.querySelector(`input[name="q${index}"]:checked`)) {
+            allAnswered = false;
+        }
+    });
+
+    document.getElementById("submitBtn").disabled = !(name && roll && course && allAnswered);
+}
+
+function submitQuiz() {
+    let score = 0;
+    let resultHTML = "";
+
+    quizData.forEach((q, index) => {
+        let selected = document.querySelector(`input[name="q${index}"]:checked`);
+        let selectedIndex = parseInt(selected.value);
+        let correctIndex = q.answer;
+
+        let selectedText = q.options[selectedIndex];
+        let correctText = q.options[correctIndex];
+
+        if (selectedIndex === correctIndex) {
+            score++;
+            resultHTML += `
+                <div class="question">
+                    <p class="correct"><b>${q.question} (1 Point)</b></p>
+                    <p>Your Answer: ${selectedText}</p>
+                    <p>Correct Answer: ${correctText}</p>
+                    <p class="correct">✔ Correct</p>
+                </div>
+            `;
+        } else {
+            resultHTML += `
+                <div class="question">
+                    <p class="wrong"><b>${q.question} (1 Point)</b></p>
+                    <p>Your Answer: ${selectedText}</p>
+                    <p>Correct Answer: ${correctText}</p>
+                    <p class="wrong">✘ Wrong</p>
+                </div>
+            `;
+        }
+    });
+
+    document.getElementById("quizPage").classList.add("hidden");
+    document.getElementById("resultPage").classList.remove("hidden");
+
+    let name = document.getElementById("name").value;
+    let roll = document.getElementById("roll").value;
+    let course = document.getElementById("course").value;
+
+    document.getElementById("studentDetails").innerHTML =
+        `<b>Name:</b> ${name}<br>
+         <b>Enrollment ID:</b> ${roll}<br>
+         <b>Course:</b> ${course}`;
+
+    document.getElementById("score").innerText = `Score: ${score}/10`;
+    document.getElementById("answers").innerHTML = resultHTML;
+}
+</script>
+
+</body>
+</html>
